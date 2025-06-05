@@ -69,3 +69,29 @@ def student_letter_grade():
             print(f"{student}: {letter_grade}")
 
 # student_letter_grade()  # Call the function to display letter grades initially #testing purposes
+
+def main():
+    """Main function to run the student gradebook program."""
+    while True:
+        print("\nStudent Gradebook Menu:")
+        print("1. Add Student Info")
+        print("2. Display Gradebook Stats")
+        print("3. Display Letter Grades")
+        print("4. Exit")
+        
+        choice = input("Enter your choice (1-4): ")
+        
+        if choice == '1':
+            student_info()
+        elif choice == '2':
+            student_gradebook_stats()
+        elif choice == '3':
+            student_letter_grade()
+        elif choice == '4':
+            print("Exiting the program. Thank you!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()  
