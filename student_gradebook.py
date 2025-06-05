@@ -31,4 +31,41 @@ def student_gradebook_stats():
         else:
             print("No grades available to calculate statistics.")
 
-student_gradebook_stats()  # Call the function to display stats initially #testing purposes
+# student_gradebook_stats()  # Call the function to display stats initially #testing purposes
+
+def student_letter_grade():
+    """Function to display the letter grade for each student based on their numeric grade."""
+    if not student_grades:
+        print("No students in the gradebook.")
+    else:
+        print("\nStudent Letter Grades:")
+        for student, grade in student_grades.items():
+            if grade >= 98:
+                letter_grade = 'A+'
+            elif grade >= 92:
+                letter_grade = 'A'
+            elif grade >= 90:
+                letter_grade = 'A-'
+            elif grade >= 88:
+                letter_grade = 'B+'
+            elif grade >= 82:
+                letter_grade = 'B'
+            elif grade >= 80:
+                letter_grade = 'B-'
+            elif grade >= 78:
+                letter_grade = 'C+'
+            elif grade >= 72:
+                letter_grade = 'C'
+            elif grade >= 70:
+                letter_grade = 'C-'
+            elif grade >= 68:
+                letter_grade = 'D+'
+            elif grade >= 62:
+                letter_grade = 'D'
+            elif grade >= 60:
+                letter_grade = 'D-'
+            else:
+                letter_grade = 'F'
+            print(f"{student}: {letter_grade}")
+
+# student_letter_grade()  # Call the function to display letter grades initially #testing purposes
