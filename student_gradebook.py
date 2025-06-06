@@ -38,6 +38,18 @@ def student_gradebook_stats():
 
 # student_gradebook_stats()  # Call the function to display stats initially #testing purposes
 
+def get_letter_grade(grade):
+    """Helper function to convert numeric grade to letter grade using mapping."""
+    grade_map = {
+        10: 'A+',
+        9: 'A',
+        8: 'B',
+        7: 'C',
+        6: 'D'
+    }
+    return grade_map.get(grade // 10, 'F')
+
+
 def student_letter_grade():
     """Function to display the letter grade for each student based on their numeric grade."""
     if not student_grades:
@@ -45,32 +57,7 @@ def student_letter_grade():
     else:
         print("\nStudent Letter Grades:")
         for student, grade in student_grades.items():
-            if grade >= 98:
-                letter_grade = 'A+'
-            elif grade >= 92:
-                letter_grade = 'A'
-            elif grade >= 90:
-                letter_grade = 'A-'
-            elif grade >= 88:
-                letter_grade = 'B+'
-            elif grade >= 82:
-                letter_grade = 'B'
-            elif grade >= 80:
-                letter_grade = 'B-'
-            elif grade >= 78:
-                letter_grade = 'C+'
-            elif grade >= 72:
-                letter_grade = 'C'
-            elif grade >= 70:
-                letter_grade = 'C-'
-            elif grade >= 68:
-                letter_grade = 'D+'
-            elif grade >= 62:
-                letter_grade = 'D'
-            elif grade >= 60:
-                letter_grade = 'D-'
-            else:
-                letter_grade = 'F'
+            letter_grade = get_letter_grade(grade)
             print(f"{student}: {letter_grade}")
 
 # student_letter_grade()  # Call the function to display letter grades initially #testing purposes

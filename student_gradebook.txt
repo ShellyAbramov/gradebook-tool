@@ -1,3 +1,5 @@
-Sara kim: 98.0
-Tom Frank: 100.0
-Frank Los: 78.9
+Sara Kim: 96.5
+Sam Gold: 85.7
+Erika Filop: 99.0
+Sammy Ops: 14.0
+Eric Dills: 100.0
