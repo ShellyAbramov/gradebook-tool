@@ -18,10 +18,7 @@ def student_info(): #for command line interface (CLI) input
 #     print(f"Student {student_full_name} with grade {grade} added successfully.") #for testing purposes
 # student_info() #call the function to get student information #for testing purposes
 
-def add_student_info(name, grade): #for API input
-    """Function to add student information to the gradebook."""
-    student_grades[name] = grade
-    save_gradebook_to_file()  # Save to file after adding a student
+
     
 def student_gradebook_stats():
     """Function to display the stats of student gradebook including min, max, and average grade."""
