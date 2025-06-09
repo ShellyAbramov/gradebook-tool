@@ -1,0 +1,2 @@
+venv/
+#this will exclude the virtual environment directory

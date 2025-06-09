@@ -1,6 +1,6 @@
 student_grades = {} #empty dictionary to store student names and grades
 
-def student_info(): 
+def student_info(): #for command line interface (CLI) input
     """Function to get student information from user input.
     And add a key-value pair to the dictionary student_grades containing the student's full name and grade."""
 
@@ -17,6 +17,11 @@ def student_info():
             print("Invalid input. Please enter a valid numeric grade.")
 #     print(f"Student {student_full_name} with grade {grade} added successfully.") #for testing purposes
 # student_info() #call the function to get student information #for testing purposes
+
+def add_student_info(name, grade): #for API input
+    """Function to add student information to the gradebook."""
+    student_grades[name] = grade
+    save_gradebook_to_file()  # Save to file after adding a student
     
 def student_gradebook_stats():
     """Function to display the stats of student gradebook including min, max, and average grade."""
@@ -37,17 +42,26 @@ def student_gradebook_stats():
             print("No grades available to calculate statistics.")
 
 # student_gradebook_stats()  # Call the function to display stats initially #testing purposes
-
-def get_letter_grade(grade):
-    """Helper function to convert numeric grade to letter grade using mapping."""
-    grade_map = {
-        10: 'A+',
-        9: 'A',
-        8: 'B',
-        7: 'C',
-        6: 'D'
+ 
+def get_letter_grade(score):
+    grade_ranges = {
+        range(98, 101): "A+",
+        range(92, 98): "A",
+        range(90, 92): "A-",
+        range(88, 90): "B+",
+        range(82, 88): "B",
+        range(80, 82): "B-",
+        range(78, 80): "C+",
+        range(72, 78): "C",
+        range(70, 72): "C-",
+        range(68, 70): "D+",
+        range(62, 68): "D",
+        range(60, 72): "D-",
+        range(0, 60): "F",
     }
-    return grade_map.get(grade // 10, 'F')
+    for r, letter in grade_ranges.items():
+        if int(score) in r:  # change to int for float scores
+            return letter
 
 
 def student_letter_grade():
@@ -93,6 +107,12 @@ def calculate_stats_from_file(file_name="student_gradebook.txt"):
             print("No valid grades found in the file.")
     except FileNotFoundError:
         print(f'File {file_name} not found. Please ensure the file exists.')
+
+    return {
+    "min_grade": min_grade,
+    "max_grade": max_grade,
+    "avg_grade": avg_grade
+    }
 
 
 def main():
