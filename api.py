@@ -84,6 +84,14 @@ async def get_students(db: db_dependency) -> List[StudentInfo]:
         raise HTTPException(status_code=404, detail="No students found")
     return [StudentInfo(name=student.name, grade=student.grade) for student in students]
 
+@app.get("/student/{student_id}")
+async def get_student(student_id: int, db: db_dependency) -> StudentInfo:
+    """Endpoint to retrieve a specific student's information using their ID."""
+    student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    return StudentInfo(name=student.name, grade=student.grade)
+
 @app.get("/stats")
 async def get_stats(db: db_dependency):
     """Endpoint to calculate and return statistics of student grades."""
