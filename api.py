@@ -39,7 +39,9 @@ class StudentInfo(BaseModel):
 @app.post("/add_student") #API makes a connection to the database here as well
 async def add_student(student: StudentInfo, db: db_dependency):
     """Endpoint to add a student's information."""
-    db_student = models.Student(name=student.name, grade=student.grade)
+    if student.grade < 0:
+        raise HTTPException(status_code=400, detail="Grades cannot be negative")
+    db_student = models.Student(name=student.name, grade=round(student.grade,2))
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
@@ -50,6 +52,8 @@ async def add_student(student: StudentInfo, db: db_dependency):
 async def update_student_grade(student_id: int, student: StudentInfo, db: db_dependency):
     """Endpoint to update a student's information."""
     """Update a student's grade by their ID."""
+    if student.grade < 0:
+        raise HTTPException(status_code=400, detail="Grades cannot be negative")
     result = db.query(models.Student).filter(models.Student.id == student_id).first() 
     if not result:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -79,3 +83,22 @@ async def get_students(db: db_dependency) -> List[StudentInfo]:
     if not students:
         raise HTTPException(status_code=404, detail="No students found")
     return [StudentInfo(name=student.name, grade=student.grade) for student in students]
+
+@app.get("/stats")
+async def get_stats(db: db_dependency):
+    """Endpoint to calculate and return statistics of student grades."""
+    """Calculate statistics from the database."""
+    students = db.query(models.Student).all()
+    if not students:
+        raise HTTPException(status_code=404, detail="No students found")
+    
+    grades = [student.grade for student in students]
+    min_grade = round(min(grades),2)
+    max_grade = round(max(grades),2)
+    avg_grade = round(sum(grades) / len(grades),2)
+
+    return {
+        "min_grade": min_grade,
+        "max_grade": max_grade,
+        "avgerage_grade": avg_grade
+    }
