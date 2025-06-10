@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from  pydantic import BaseModel
 from typing import Annotated, List
 from student_gradebook_api import add_student_info, calculate_stats_from_file
+from student_gradebook import get_letter_grade  # Importing the function to get letter grades
 #student_info, student_letter_grades, student_gradebook_stats, calculate_stats_from_file
 import models
 from database import engine, SessionLocal
@@ -110,3 +111,16 @@ async def get_stats(db: db_dependency):
         "max_grade": max_grade,
         "avgerage_grade": avg_grade
     }
+
+@app.get("/student_letter_grades")
+async def get_student_letter_grades(db: db_dependency):
+    """Endpoint to retrieve letter grades for all students."""
+    students = db.query(models.Student).all()
+    if not students:
+        raise HTTPException(status_code=404, detail="No students found")
+    
+    letter_grades = {}
+    for student in students:
+        letter_grades[student.name] = get_letter_grade(student.grade) #adds key value pair to the dictionary
+    
+    return letter_grades
