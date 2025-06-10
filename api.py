@@ -70,3 +70,12 @@ async def delete_student(student_id: int, db: db_dependency):
     db.delete(result)
     db.commit()
     return {"message": f"Student with name {db_student.name} and ID {student_id} deleted successfully."}
+
+@app.get("/students")
+async def get_students(db: db_dependency) -> List[StudentInfo]:
+    """Endpoint to retrieve all students."""
+    """Get all students from the database."""
+    students = db.query(models.Student).all()
+    if not students:
+        raise HTTPException(status_code=404, detail="No students found")
+    return [StudentInfo(name=student.name, grade=student.grade) for student in students]
