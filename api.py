@@ -8,6 +8,7 @@ import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 
+
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)  # Create tables in the database
 
@@ -22,6 +23,8 @@ def get_db():
 
 #create some annotations
 db_dependency = Annotated[Session, Depends(get_db)]
+models.Base.metadata.create_all(bind=engine)  # Create tables in the database
+
 
 @app.get("/")
 async def read_root():
