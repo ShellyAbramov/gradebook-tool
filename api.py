@@ -109,7 +109,7 @@ async def get_stats(db: db_dependency):
     return {
         "min_grade": min_grade,
         "max_grade": max_grade,
-        "avgerage_grade": avg_grade
+        "average_grade": avg_grade
     }
 
 @app.get("/student_letter_grades")
@@ -124,3 +124,13 @@ async def get_student_letter_grades(db: db_dependency):
         letter_grades[student.name] = get_letter_grade(student.grade) #adds key value pair to the dictionary
     
     return letter_grades
+
+@app.get("/student_letter_grade/{student_id}")
+async def get_student_letter_grade(student_id: int, db: db_dependency):
+    """Endpoint to retrieve a specific student's letter grade using their ID."""
+    student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    letter_grade = get_letter_grade(student.grade)
+    return {"name": student.name, "letter_grade": letter_grade}
