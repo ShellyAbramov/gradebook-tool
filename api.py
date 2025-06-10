@@ -1,13 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
-#from sqlalchemy import create_engine, Column, Integer, String
 from  pydantic import BaseModel
 from typing import Annotated, List
-from student_gradebook_api import add_student_info, calculate_stats_from_file
+#from student_gradebook_api import add_student_info, calculate_stats_from_file
 from student_gradebook import get_letter_grade  # Importing the function to get letter grades
 #student_info, student_letter_grades, student_gradebook_stats, calculate_stats_from_file
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 
 app = FastAPI()
@@ -134,3 +134,13 @@ async def get_student_letter_grade(student_id: int, db: db_dependency):
     
     letter_grade = get_letter_grade(student.grade)
     return {"name": student.name, "letter_grade": letter_grade}
+
+@app.delete("/reset_db")
+async def reset_db(db: db_dependency):
+    """Endpoint to reset the database by deleting all student records."""
+    db.query(models.Student).delete()
+    db.commit()
+    #reset the sequence for the ID column
+    db.execute(text("ALTER SEQUENCE students_and_grades_id_seq RESTART WITH 1;"))
+    db.commit()
+    return {"message": "All student records have been deleted and IDs reset."}
