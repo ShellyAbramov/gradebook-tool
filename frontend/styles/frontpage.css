@@ -1,0 +1,47 @@
+.welcome-message {
+	font-family: Arial, sans-serif;
+	font-size: 24px;
+	color: #333;
+	background-color:antiquewhite;
+	padding: 20px;
+	border-radius: 8px;
+	text-align: center;
+	margin-top: 20px;
+}
+
+
+
+
+.student-info {
+	font-family: Arial, sans-serif;
+	background-color: #4CAF50; /* Green */
+	border: none;
+	color: white;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+	border-radius: 12px;
+	text-align: center;
+	transition: opacity 0.20s;
+}
+
+.student-info:hover{
+	background-color: #45a049; /* Darker green on hover */
+	/*opacity: 0.4;*/
+}
+
+.student-info:active {
+	background-color: #3e8e41; /* Darker green on click */
+	box-shadow: 0 0 0 5px rgba(0,0,0,0.2);
+}
+
+.button-row {
+	display: flex;
+	justify-content: center;
+	gap: 10px; /* Space between buttons */
+	margin-top: 20px;
+}
