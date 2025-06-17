@@ -1,8 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
 
-URL_DATABASE = "postgresql://postgres:ProgrmData%401@localhost:5432/StudentGradebook"
+load_dotenv()  # load environment variables from .env file
+
+URL_DATABASE = os.getenv("DATABASE_URL")
 
 engine = create_engine(URL_DATABASE)
 
