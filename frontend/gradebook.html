@@ -3,17 +3,44 @@
 	<head>
 		<title>Student Gradebook</title>
 		<link rel = "stylesheet" href="styles/frontpage.css">
+		<link rel = "stylesheet" href="styles/navbar.css">
 	</head>
 
 	<body>
-		<p class="welcome-message">Welcome to the Student Gradebook</p>
+		
+			<ul class="navbar">
+				<li><a href="#">Home</a></li>
+				<li class="dropdown">
+					<a hred="#">Records</a>
+					<ul class="dropdown-content">
+						<li><a href="#">Student Details</a></li>
+						<li><a href="#">Course Records</a></li>
+						<li><a href="#">Grade Records</a></li>
+						<li><a href="#">GPA Records</a></li>
+						<li><a href="#">School</a></li>
+						<li><a href="#">Teachers</a></li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a hred="#">Students</a>
+					<ul class="dropdown-content">
+						<li><a href="#">View Students</a></li>
+						<li><a href="#">Add Student</a></li>
+						<li><a href="#">Update Student</a></li>
+						<li><a href="#">Delete Student</a></li>
+					</ul>
+				</li>
+				<li><a href="#">About</a></li>
+			</ul>
+
+		<h1 class="welcome-message">Welcome to the Student Gradebook</h1>
+
 		<div class = "button-row">
 			<button title="History of student records" class="student-info">Student Records</button>
 			<button title="Add new student" class="student-info">Add New Student</button>
 			<button title="View grade details" class="student-info">View Grades</button>
 			<button title="Update grades" class="student-info">Update Grades</button>
 		</div>
-
 	</body>
 </html>
 

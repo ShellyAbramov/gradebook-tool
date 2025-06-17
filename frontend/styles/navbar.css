@@ -1,0 +1,63 @@
+/* Navbar styles */
+*{
+	padding:0;
+	margin: 0;
+	font-family: arial, sans-serif;
+
+}
+
+ul.navbar {
+	list-style:none;
+	background-color: #1c931e; 
+	display: flex; /* Use flexbox for horizontal layout */
+	padding: 0; /* Remove padding from navbar */
+	margin: 0; /* Remove margin from navbar */
+}
+
+ul.navbar > li{
+	position: relative; /* Position relative for dropdown */
+}
+
+ul.navbar > li > a{
+	display: block;
+	padding: 20px 25px;
+	color: white; /* White text for navigation links */
+	text-decoration: none; /* Remove underline from links */
+	font-size: 20px; /* Font size for navigation links */
+}
+
+
+
+ul.navbar > li > a:hover {
+  background-color: #111;
+}
+
+ul.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: green;
+  min-width: 180px;
+  z-index: 999;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+ul.dropdown-content li a {
+  padding: 12px 16px;
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+ul.dropdown-content li a:hover {
+  background-color: #222;
+}
+
+li.dropdown:hover > ul.dropdown-content {
+  display: block;
+}
+
