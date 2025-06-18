@@ -1,2 +1,5 @@
 venv/
 #this will exclude the virtual environment directory
+
+.env
+#this will exclude the environment variables file
