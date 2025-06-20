@@ -8,6 +8,7 @@ import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from datetime import date
 
 
 app = FastAPI()
@@ -24,8 +25,6 @@ def get_db():
 
 #create some annotations
 db_dependency = Annotated[Session, Depends(get_db)]
-models.Base.metadata.create_all(bind=engine)  # Create tables in the database
-
 
 @app.get("/")
 async def read_root():
@@ -35,17 +34,18 @@ async def read_root():
 class StudentInfo(BaseModel):
     """Pydantic model for student information."""
     name: str
-    birthdate: str 
+    birthdate: date 
     school_name: str
     major: str
     graduation_year: int
+    student_id_number: str  
 
 @app.post("/add_student_info") #API makes a connection to the database here as well
 async def add_student(student: StudentInfo, db: db_dependency):
     """Endpoint to add a student's information."""
     
     db_student = models.Student(name=student.name, birthdate=student.birthdate,
-                                school_name=student.school_name, major=student.major, graduation_year=student.graduation_year)
+                                school_name=student.school_name, major=student.major, graduation_year=student.graduation_year, student_id_number=student.student_id_number)
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
@@ -130,6 +130,60 @@ async def reset_student_info(db: db_dependency):
     db.execute(text("ALTER SEQUENCE students_id_seq RESTART WITH 1;"))
     db.commit()
     return {"message": "All student records have been deleted and IDs reset."}
+####################################################################################
+class StudentCourseInfo(BaseModel):
+    """Pydantic model for student course information."""
+    # student_id: int // not user friendly because the user doesn't know the course ID
+    # course_id: int
+    # grade: float
+
+    student_id_number: str 
+    course_name: str  
+    course_number: str
+    teacher: str
+    credits: int
+    grade:float
+
+@app.post("/add_student_course")
+async def add_student_course(student_course: StudentCourseInfo, db: db_dependency):
+    """Endpoint to add a student's course information."""
+    #checks if the student exists in the database by lookig up student_id_number
+    student = db.query(models.Student).filter(models.Student.student_id_number == student_course.student_id_number).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    #checks if the course exists in the database by looking up course_name, course_number, and teacher
+    course = db.query(models.Course).filter(models.Course.course_name == student_course.course_name,
+                                             models.Course.course_number == student_course.course_number,
+                                             models.Course.teacher == student_course.teacher).first()
+    if not course:
+        course = models.Course(course_name=student_course.course_name,
+                               course_number=student_course.course_number,
+                               teacher=student_course.teacher,
+                               credits=student_course.credits) #if course does not exist, create a new one
+        db.add(course)
+        db.commit()
+        db.refresh(course)
+
+    # Create a new StudentCourse entry
+    db_student_course = models.StudentCourse(student_id=student.id, course_id=course.id, grade=student_course.grade)
+    db.add(db_student_course)
+    db.commit()
+    db.refresh(db_student_course)
+    return {"message": f"Student {student.name} added to course {course.course_name} successfully."}
+
+
+    
+    
+
+@app.get("/student_courses")
+async def get_student_courses(db: db_dependency) -> List[StudentCourseInfo]:
+    """Endpoint to retrieve all student course information from database."""
+    student_courses = db.query(models.StudentCourse).all()
+    if not student_courses:
+        raise HTTPException(status_code=404, detail="No student courses found")
+    return [StudentCourseInfo(student_id=sc.student_id, course_id=sc.course_id, grade=sc.grade) for sc in student_courses]
+
+########################################################################################
 
 
 

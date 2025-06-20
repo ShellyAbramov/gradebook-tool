@@ -7,12 +7,13 @@ class Student(Base):
     #Table for student information
     __tablename__ = 'students'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String, index=True, nullable=False)
     birthdate = Column(String)  # Assuming birthdate is stored as string in 'YYYY-MM-DD' format
     school_name = Column(String)  
     major = Column(String) 
     graduation_year = Column(Integer)
     GPA = Column(Float)
+    student_id_number = Column(String(9), unique=True, index=True, nullable=False)  # Unique student ID number
 
 
     course_association = relationship("StudentCourse", back_populates="student", cascade="all, delete")
@@ -25,9 +26,11 @@ class Course(Base):
     __tablename__ = 'courses'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    course_name = Column(String, unique=True, index=True)
+    course_number = Column(String, unique=True, index=True)
     credits = Column(Integer)
     teacher = Column(String) 
+    number_of_students = Column(Integer)  # Number of students enrolled in the course
 
     student_association = relationship("StudentCourse", back_populates="course") #a course can have many students enrolled in it
 
@@ -36,13 +39,13 @@ class StudentCourse(Base):
     """SQLAlchemy model for the StudentCourse association table."""
     __tablename__ = 'student_courses'
 
-    id = Column(Integer, primary_key=True, index=True) 
+    id = Column(Integer, primary_key=True, autoincrement= True, index=True) 
 
     #foreign keys to link students and courses tables
-    student_id = Column(Integer, ForeignKey('students.id'), primary_key=True)
-    course_id = Column(Integer, ForeignKey('courses.id'), primary_key=True)
+    student_id = Column(Integer, ForeignKey('students.id'))
+    course_id = Column(Integer, ForeignKey('courses.id'))
 
-    grade = Column(Float)  # Grade for the course
+    grade = Column(Float)  
 
     student = relationship("Student", back_populates="course_association")
     course = relationship("Course", back_populates="student_association")
