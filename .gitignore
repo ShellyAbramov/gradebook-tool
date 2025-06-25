@@ -3,3 +3,12 @@ venv/
 
 .env 
 #this will exclude the environment variables file from being tracked
+
+
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "*.pyo" >> .gitignore
+echo "*.pyd" >> .gitignore
+echo ".Python" >> .gitignore
+echo "env/" >> .gitignore
+echo "venv/" >> .gitignore
