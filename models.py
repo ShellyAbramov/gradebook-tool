@@ -8,8 +8,7 @@ class Student(Base):
     __tablename__ = 'students'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
-    birthdate = Column(String)  # Assuming birthdate is stored as string in 'YYYY-MM-DD' format
-    school_name = Column(String)  
+    birthdate = Column(String)  # Assuming birthdate is stored as string in 'YYYY-MM-DD' format 
     major = Column(String) 
     graduation_year = Column(Integer)
     GPA = Column(Float)

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from  pydantic import BaseModel
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 #from student_gradebook_api import add_student_info, calculate_stats_from_file
 from student_gradebook import get_letter_grade  # Importing the function to get letter grades
 #student_info, student_letter_grades, student_gradebook_stats, calculate_stats_from_file
@@ -9,6 +9,7 @@ from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from datetime import date
+from sqlalchemy.exc import IntegrityError
 
 
 app = FastAPI()
@@ -23,7 +24,6 @@ def get_db():
     finally:
         db.close()
 
-#create some annotations
 db_dependency = Annotated[Session, Depends(get_db)]
 
 @app.get("/")
@@ -35,7 +35,6 @@ class StudentInfo(BaseModel):
     """Pydantic model for student information."""
     name: str
     birthdate: date 
-    school_name: str
     major: str
     graduation_year: int
     student_id_number: str  
@@ -45,51 +44,45 @@ async def add_student(student: StudentInfo, db: db_dependency):
     """Endpoint to add a student's information."""
     
     db_student = models.Student(name=student.name, birthdate=student.birthdate,
-                                school_name=student.school_name, major=student.major, graduation_year=student.graduation_year, student_id_number=student.student_id_number)
+                                major=student.major, graduation_year=student.graduation_year, student_id_number=student.student_id_number)
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
     return {"message": f"Student {student.name} added successfully."}
 
+class UpdateStudentInfo(BaseModel):
+    """Pydantic model for updating student information."""
+    name: Optional [str]
+    birthdate: Optional[date]
+    major: Optional[str]
+    graduation_year: Optional[int]
+    student_id_number: Optional[str] 
 
-@app.put("/update_school_name/{student_id}")
-async def update_school_name(student_id: int, school_name: str, db: db_dependency):
-    """Endpoint to update a student's school name."""
-    """Update a student's school name by their ID."""
+@app.put("/update_student_info/{student_id}")
+async def update_student_info(student_id: int, student: UpdateStudentInfo, db: db_dependency):
+    """Endpoint to update a student's information."""
+    """Update a student's information by their ID."""
     result = db.query(models.Student).filter(models.Student.id == student_id).first() 
     if not result:
         raise HTTPException(status_code=404, detail="Student not found")
+    
     db_student = result
-    db_student.school_name = school_name
+    if student.name is not None:
+        db_student.name = student.name
+    if student.birthdate is not None:
+        db_student.birthdate = student.birthdate
+    if student.major is not None:
+        db_student.major = student.major
+    if student.graduation_year is not None:
+        db_student.graduation_year = student.graduation_year
+    if student.student_id_number is not None:
+        db_student.student_id_number = student.student_id_number
+    
     db.commit()
     db.refresh(db_student)
-    return {"message": f"Student {db_student.name}'s school name updated successfully."}
+    return {"message": f"Student {db_student.name}'s information updated successfully."} 
 
-@app.put("/update_major/{student_id}")
-async def update_major(student_id: int, major: str, db: db_dependency):
-    """Endpoint to update a student's major."""
-    """Update a student's major by their ID."""
-    result = db.query(models.Student).filter(models.Student.id == student_id).first() 
-    if not result:
-        raise HTTPException(status_code=404, detail="Student not found")
-    db_student = result
-    db_student.major = major
-    db.commit()
-    db.refresh(db_student)
-    return {"message": f"Student {db_student.name}'s major updated successfully."}
 
-@app.put("/update_grad_year/{student_id}")
-async def update_grad_year(student_id: int, graduation_year: int, db: db_dependency):
-    """Endpoint to update a student's graduation year."""
-    """Update a student's graduation year by their ID."""
-    result = db.query(models.Student).filter(models.Student.id == student_id).first() 
-    if not result:
-        raise HTTPException(status_code=404, detail="Student not found")
-    db_student = result
-    db_student.graduation_year = graduation_year
-    db.commit()
-    db.refresh(db_student)
-    return {"message": f"Student {db_student.name}'s graduation year updated successfully."}
 
 @app.get("/student_info")
 async def get_student_info(db: db_dependency) -> List[StudentInfo]:
@@ -98,8 +91,8 @@ async def get_student_info(db: db_dependency) -> List[StudentInfo]:
     students = db.query(models.Student).all()
     if not students:
         raise HTTPException(status_code=404, detail="No students found")
-    return [StudentInfo(name=student.name, birthdate=student.birthdate, school_name=student.school_name,
-                        major=student.major, graduation_year=student.graduation_year) for student in students]
+    return [StudentInfo(name=student.name, birthdate=student.birthdate, major=student.major, 
+                        graduation_year=student.graduation_year, student_id_number=student.student_id_number) for student in students]
 
 @app.get("/student_info/{student_id}")
 async def get_student_info_by_id(student_id: int, db: db_dependency) -> StudentInfo:
@@ -107,8 +100,8 @@ async def get_student_info_by_id(student_id: int, db: db_dependency) -> StudentI
     student = db.query(models.Student).filter(models.Student.id == student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
-    return StudentInfo(name=student.name, birthdate=student.birthdate, school_name=student.school_name,
-                        major=student.major, graduation_year=student.graduation_year)
+    return StudentInfo(name=student.name, birthdate=student.birthdate, 
+                        major=student.major, graduation_year=student.graduation_year, student_id_number=student.student_id_number)
 
 @app.delete("/delete_student_info/{student_id}")
 async def delete_student_info(student_id: int, db: db_dependency):
@@ -124,12 +117,18 @@ async def delete_student_info(student_id: int, db: db_dependency):
 @app.delete("/reset_student_info")
 async def reset_student_info(db: db_dependency):
     """Endpoint to reset the student information by deleting all records."""
+    # Delete student-course associations FIRST
+    db.query(models.StudentCourse).delete()
+    # THEN delete students
     db.query(models.Student).delete()
     db.commit()
-    # Reset the sequence for the ID column
+        
+    # Reset the sequences
     db.execute(text("ALTER SEQUENCE students_id_seq RESTART WITH 1;"))
+    db.execute(text("ALTER SEQUENCE student_courses_id_seq RESTART WITH 1;"))
     db.commit()
-    return {"message": "All student records have been deleted and IDs reset."}
+    return {"message": "All student records and course enrollments have been deleted and IDs reset."}
+
 ####################################################################################
 class StudentCourseInfo(BaseModel):
     """Pydantic model for student course information."""
@@ -159,30 +158,46 @@ async def add_student_course(student_course: StudentCourseInfo, db: db_dependenc
         course = models.Course(course_name=student_course.course_name,
                                course_number=student_course.course_number,
                                teacher=student_course.teacher,
-                               credits=student_course.credits) #if course does not exist, create a new one
+                               credits=student_course.credits,
+                               number_of_students=0) #if course does not exist, create a new one
         db.add(course)
         db.commit()
         db.refresh(course)
 
     # Create a new StudentCourse entry
-    db_student_course = models.StudentCourse(student_id=student.id, course_id=course.id, grade=student_course.grade)
-    db.add(db_student_course)
+    try:
+        db_student_course = models.StudentCourse(student_id=student.id, course_id=course.id, grade=student_course.grade)
+        db.add(db_student_course)
+
+        #increment the number of students in the course
+        course.number_of_students = (course.number_of_students or 0) + 1
+        db.commit()
+        db.refresh(db_student_course)
+
+        return {"message": f"Student {student.name} added to course {course.course_name} successfully."}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="This student is already enrolled in this course.")
+
+
+@app.get("/student_courses")
+async def get_student_courses(db: db_dependency) -> List[StudentCourseInfo]:
+    """Endpoint to retrieve all student course information from database."""
+    student_courses = db.query(models.StudentCourse).all()
+    if not student_courses:
+        raise HTTPException(status_code=404, detail="No student courses found")
+    return [StudentCourseInfo(student_id=sc.student_id, course_id=sc.course_id, grade=sc.grade) for sc in student_courses]
+
+
+@app.delete("/reset_courses")
+async def reset_courses(db: db_dependency):
+    """Endpoint to reset the student courses by deleting all records."""
+    db.query(models.Course).delete()
     db.commit()
-    db.refresh(db_student_course)
-    return {"message": f"Student {student.name} added to course {course.course_name} successfully."}
-
-
-    
-    
-
-# @app.get("/student_courses")
-# async def get_student_courses(db: db_dependency) -> List[StudentCourseInfo]:
-#     """Endpoint to retrieve all student course information from database."""
-#     student_courses = db.query(models.StudentCourse).all()
-#     if not student_courses:
-#         raise HTTPException(status_code=404, detail="No student courses found")
-#     return [StudentCourseInfo(student_id=sc.student_id, course_id=sc.course_id, grade=sc.grade) for sc in student_courses]
-
+    # Reset the sequence for the ID column
+    db.execute(text("ALTER SEQUENCE courses_id_seq RESTART WITH 1;"))
+    db.commit()
+    return {"message": "All course records have been deleted and IDs reset."}
 ########################################################################################
 
 

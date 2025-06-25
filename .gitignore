@@ -1,14 +1,15 @@
+# Virtual environment variables, will excluse virtual environment directory
 venv/
-#this will exclude the virtual environment directory
 
+# Environment variables, will exclude the environment variables file from being tracked
 .env 
-#this will exclude the environment variables file from being tracked
 
+# Python bytecode files, will exclude compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 
-echo "__pycache__/" >> .gitignore
-echo "*.pyc" >> .gitignore
-echo "*.pyo" >> .gitignore
-echo "*.pyd" >> .gitignore
-echo ".Python" >> .gitignore
-echo "env/" >> .gitignore
-echo "venv/" >> .gitignore
+.vscode/
+.idea/
