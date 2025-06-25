@@ -175,13 +175,13 @@ async def add_student_course(student_course: StudentCourseInfo, db: db_dependenc
     
     
 
-@app.get("/student_courses")
-async def get_student_courses(db: db_dependency) -> List[StudentCourseInfo]:
-    """Endpoint to retrieve all student course information from database."""
-    student_courses = db.query(models.StudentCourse).all()
-    if not student_courses:
-        raise HTTPException(status_code=404, detail="No student courses found")
-    return [StudentCourseInfo(student_id=sc.student_id, course_id=sc.course_id, grade=sc.grade) for sc in student_courses]
+# @app.get("/student_courses")
+# async def get_student_courses(db: db_dependency) -> List[StudentCourseInfo]:
+#     """Endpoint to retrieve all student course information from database."""
+#     student_courses = db.query(models.StudentCourse).all()
+#     if not student_courses:
+#         raise HTTPException(status_code=404, detail="No student courses found")
+#     return [StudentCourseInfo(student_id=sc.student_id, course_id=sc.course_id, grade=sc.grade) for sc in student_courses]
 
 ########################################################################################
 
