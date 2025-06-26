@@ -10,9 +10,25 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from datetime import date
 from sqlalchemy.exc import IntegrityError
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+
+# CORS middleware to allow requests from any origin
+origins = [
+    'http://localhost:3000'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows requests from the specified origins
+    allow_credentials=True,
+   # allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+   # allow_headers=["*"],  # Allows all headers
+)
+
+
 models.Base.metadata.create_all(bind=engine)  # Create tables in the database
 
 
