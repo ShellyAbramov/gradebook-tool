@@ -69,12 +69,6 @@ const AddStudentPage = () => {
   return (
 
     <div>
-      <nav className='navbar navbar-dark bg-primary'>
-        <div className='container-fluid'>
-          <a className='navbar-brand' href='#'>Student Management System</a>
-        </div>
-      </nav>
-
       <div className='container'>
         <form onSubmit = {handleFormSubmit}>
           <div className ='mb-3 mt-3'>
