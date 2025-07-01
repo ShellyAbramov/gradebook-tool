@@ -11,6 +11,7 @@ from sqlalchemy import text
 from datetime import date
 from sqlalchemy.exc import IntegrityError
 from fastapi.middleware.cors import CORSMiddleware
+from gpa import student_gpa_in_records  # Importing the GPA calculation functions
 
 
 app = FastAPI()
@@ -190,7 +191,10 @@ async def add_student_course(student_course: StudentCourseInfo, db: db_dependenc
         db.commit()
         db.refresh(db_student_course)
 
-        return {"message": f"Student {student.name} added to course {course.course_name} successfully."}
+        #call the function to calculate and update the student's GPA
+        student_gpa_in_records(student.student_id_number, db)
+
+        return {"message": f"Student {student.name} added to course {course.course_name} and GPA updated successfully."}
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="This student is already enrolled in this course.")
