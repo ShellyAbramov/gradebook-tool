@@ -7,6 +7,7 @@ import {Route, createBrowserRouter, RouterProvider, createRoutesFromElements} fr
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import AddStudentPage from './pages/AddStudentPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 
 
@@ -15,7 +16,8 @@ const App = () => {
     createRoutesFromElements(
       <Route path="/" element={<MainLayout/>}>
         <Route index elemet={<HomePage />} />
-        <Route path='/add-student' element={<AddStudentPage/>} />   
+        <Route path='/add-student' element={<AddStudentPage/>} />  
+        <Route path='*' element={<NotFoundPage />} /> 
       </Route>
     )
   );
