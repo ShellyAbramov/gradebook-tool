@@ -122,7 +122,8 @@ async def get_student_info_by_id(student_id: int, db: db_dependency) -> StudentI
         raise HTTPException(status_code=404, detail="Student not found")
     return StudentInfo(name=student.name, birthdate=student.birthdate, 
                         major=student.major, graduation_year=student.graduation_year,
-                        gpa=student.GPA, student_id_number=student.student_id_number)
+                        gpa=student.GPA, 
+                        student_id_number=student.student_id_number)
 
 @app.delete("/delete_student_info/{student_id}")
 async def delete_student_info(student_id: int, db: db_dependency):

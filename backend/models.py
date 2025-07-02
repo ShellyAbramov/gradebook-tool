@@ -11,7 +11,7 @@ class Student(Base):
     birthdate = Column(String)  # Assuming birthdate is stored as string in 'YYYY-MM-DD' format 
     major = Column(String) 
     graduation_year = Column(Integer)
-    GPA = Column(Float)
+    GPA = Column(Float, nullable=True)
     student_id_number = Column(String(9), unique=True, index=True, nullable=False)  # Unique student ID number
 
 

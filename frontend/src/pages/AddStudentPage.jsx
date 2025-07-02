@@ -95,7 +95,7 @@ const AddStudentPage = () => {
           <button type='submit' className='btn btn-primary'>Submit</button>
 
         </form>
-      <div class='container'>
+      <div className='container'>
         <h3 className='mt-5'>Students Added:</h3>
         <table className='table table-striped table-bordered table-hover mt-2'>
           <thead>
@@ -110,7 +110,7 @@ const AddStudentPage = () => {
 
 
           <tbody>
-            {students.map((student) => (
+            {students.map((student, index) => (
               <tr key={student.student_id_number || index}>
                 <td>{student.name}</td>
                 <td>{formatDate(student.birthdate)}</td>
