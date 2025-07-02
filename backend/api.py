@@ -54,6 +54,7 @@ class StudentInfo(BaseModel):
     birthdate: date 
     major: str
     graduation_year: int
+    gpa: Optional[float] = None  # GPA is optional, will be calculated later when adding courses
     student_id_number: str  
 
 @app.post("/add_student_info") #API makes a connection to the database here as well
@@ -61,7 +62,8 @@ async def add_student(student: StudentInfo, db: db_dependency):
     """Endpoint to add a student's information."""
     
     db_student = models.Student(name=student.name, birthdate=student.birthdate,
-                                major=student.major, graduation_year=student.graduation_year, student_id_number=student.student_id_number)
+                                major=student.major, graduation_year=student.graduation_year, 
+                                student_id_number=student.student_id_number)
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
@@ -109,7 +111,8 @@ async def get_student_info(db: db_dependency) -> List[StudentInfo]:
     if not students:
         raise HTTPException(status_code=404, detail="No students found")
     return [StudentInfo(name=student.name, birthdate=student.birthdate, major=student.major, 
-                        graduation_year=student.graduation_year, student_id_number=student.student_id_number) for student in students]
+                        graduation_year=student.graduation_year,
+                        gpa=student.GPA,student_id_number=student.student_id_number) for student in students]
 
 @app.get("/student_info/{student_id}")
 async def get_student_info_by_id(student_id: int, db: db_dependency) -> StudentInfo:
@@ -118,7 +121,8 @@ async def get_student_info_by_id(student_id: int, db: db_dependency) -> StudentI
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     return StudentInfo(name=student.name, birthdate=student.birthdate, 
-                        major=student.major, graduation_year=student.graduation_year, student_id_number=student.student_id_number)
+                        major=student.major, graduation_year=student.graduation_year,
+                        gpa=student.GPA, student_id_number=student.student_id_number)
 
 @app.delete("/delete_student_info/{student_id}")
 async def delete_student_info(student_id: int, db: db_dependency):
