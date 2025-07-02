@@ -8,6 +8,7 @@ import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import AddStudentPage from './pages/AddStudentPage';
 import NotFoundPage from './pages/NotFoundPage';
+import StudentRecordsPage from './pages/StudentRecordsPage';
 
 
 const App = () => {
@@ -16,7 +17,8 @@ const App = () => {
       <Route path="/" element={<MainLayout/>}>
         <Route index element={<HomePage />} />
         <Route path='/add-student' element={<AddStudentPage/>} />  
-        <Route path='*' element={<NotFoundPage />} /> 
+        <Route path='*' element={<NotFoundPage />} />
+        <Route path='/student-records' element={<StudentRecordsPage />} />
       </Route>
     )
   );
