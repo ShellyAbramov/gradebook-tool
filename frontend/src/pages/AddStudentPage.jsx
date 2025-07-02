@@ -95,8 +95,9 @@ const AddStudentPage = () => {
           <button type='submit' className='btn btn-primary'>Submit</button>
 
         </form>
-
-        <table className='table table-striped table-bordered table-hover mt-5'>
+      <div class='container'>
+        <h3 className='mt-5'>Students Added:</h3>
+        <table className='table table-striped table-bordered table-hover mt-2'>
           <thead>
             <tr>
               <th scope='col'>Name</th>
@@ -123,6 +124,7 @@ const AddStudentPage = () => {
         </table>
       </div>
 
+    </div>
     </div>
   )
 }
