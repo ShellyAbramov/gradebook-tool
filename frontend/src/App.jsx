@@ -10,12 +10,11 @@ import AddStudentPage from './pages/AddStudentPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 
-
 const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<MainLayout/>}>
-        <Route index elemet={<HomePage />} />
+        <Route index element={<HomePage />} />
         <Route path='/add-student' element={<AddStudentPage/>} />  
         <Route path='*' element={<NotFoundPage />} /> 
       </Route>

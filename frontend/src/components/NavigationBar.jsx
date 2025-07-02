@@ -13,6 +13,9 @@ const NavigationBar = () => {
             <Nav.Link as={NavLink} to="/" end>Home</Nav.Link>
             <Nav.Link as={NavLink} to="/add-student">Add Student</Nav.Link>
             <Nav.Link as={NavLink} to="/students">Student Records</Nav.Link>
+            <Nav.Link as={NavLink} to= "/add-student-course">Add Student Courses</Nav.Link>
+            <Nav.Link as={NavLink} to="/grades">Grades</Nav.Link>
+            <Nav.Link as={NavLink} to="/courses">Courses</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
