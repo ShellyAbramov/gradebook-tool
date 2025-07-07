@@ -14,7 +14,7 @@ const AddStudentCoursePage = () => {
 
 
     const fetchCourses = async () => {
-        const response = await Axios.get('/student_courses');
+        const response = await Axios.get('/student_enrollments');
         setCourses(response.data);
         };
 
@@ -68,6 +68,11 @@ const AddStudentCoursePage = () => {
       <div className='container'>
         <form onSubmit = {handleFormSubmit}>
           <div className ='mb-3 mt-3'>
+            <label htmlFor='student_name' className='form-label'>Student Name:</label>
+            <input type='text' className='form-control' id='student_name' name='student_name' onChange={handleInputChange} value={formData.student_name} required/>
+          </div>
+        
+          <div className ='mb-3 mt-3'>
             <label htmlFor='student_id_number' className='form-label'>Student ID #:</label>
             <input type='text' className='form-control' id='student_id_number' name='student_id_number' onChange={handleInputChange} value={formData.student_id_number} required/>
           </div>
@@ -101,6 +106,7 @@ const AddStudentCoursePage = () => {
         <table className='table table-striped table-bordered table-hover mt-2'>
           <thead>
             <tr>
+              <th scope='col'>Student Name</th>
               <th scope='col'>Student ID #</th>
               <th scope='col'>Course Name</th>
               <th scope='col'>Course Number</th>
@@ -114,6 +120,7 @@ const AddStudentCoursePage = () => {
           <tbody>
             {courses.map((course, index) => (
               <tr key={course.student_id_number || index}>
+                <td>{course.student_name}</td>
                 <td>{course.student_id_number}</td>
                 <td>{course.course_name}</td>
                 <td>{course.course_number}</td>
