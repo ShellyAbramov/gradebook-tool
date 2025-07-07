@@ -167,7 +167,7 @@ class StudentCourseInfo(BaseModel):
 
 @app.post("/add_student_course")
 async def add_student_course(student_course: StudentCourseInfo, db: db_dependency):
-    """Endpoint to add a student's course information."""
+    """Endpoint to add a student's course information/enrollment."""
     #checks if the student exists in the database by lookig up student_id_number
     student = db.query(models.Student).filter(models.Student.student_id_number == student_course.student_id_number).first()
     if not student:
@@ -205,14 +205,90 @@ async def add_student_course(student_course: StudentCourseInfo, db: db_dependenc
         raise HTTPException(status_code=400, detail="This student is already enrolled in this course.")
 
 
-@app.get("/student_courses")
-async def get_student_courses(db: db_dependency) -> List[StudentCourseInfo]:
-    """Endpoint to retrieve all student course information from database."""
-    student_courses = db.query(models.StudentCourse).all()
-    if not student_courses:
-        raise HTTPException(status_code=404, detail="No student courses found")
-    return [StudentCourseInfo(student_id=sc.student_id, course_id=sc.course_id, grade=sc.grade) for sc in student_courses]
 
+@app.get('/courses')
+async def get_courses(db: db_dependency):
+    """Endpoint to retrieve all courses from the database with real-time counts."""
+    
+    courses = db.query(models.Course).all()
+
+    if not courses:
+        raise HTTPException(status_code=404, detail="No courses found")
+    
+    course_list = []
+    for course in courses:
+        #count the number of students enrolled in each course
+        enrollment_count = db.query(models.StudentCourse).filter(models.StudentCourse.course_id == course.id).count()
+
+        course_list.append({
+            "course_id": course.id,
+            "course_name": course.course_name,
+            "course_number": course.course_number,
+            "teacher": course.teacher,
+            "credits": course.credits,
+            "number_of_students": enrollment_count
+        })
+
+    return course_list
+
+@app.get("/student_enrollments")
+async def get_student_enrollments(db: db_dependency, student_id_number: Optional[str] = None):
+    '''Get student enrollments in courses. If student_id_number is provided, filter by that student.'''
+
+    query = db.query(
+        models.Student.name.label("student_name"),
+        models.Student.student_id_number,
+        models.Course.course_name,  
+        models.Course.course_number,
+        models.Course.credits,
+        models.Course.teacher,
+        models.StudentCourse.grade #get gradefrom studentCourse table
+
+    ).join(
+        models.StudentCourse, models.Student.id == models.StudentCourse.student_id
+    ).join(
+        models.Course, models.Course.id == models.StudentCourse.course_id
+    )
+
+    # If a student_id_number is provided, filter the query
+    if student_id_number:
+        query = query.filter(models.Student.student_id_number == student_id_number)
+
+        #check if student exists
+        student_exists = db.query(models.Student).filter(
+            models.Student.student_id_number == student_id_number
+        ).first()
+        if not student_exists:
+            raise HTTPException(status_code=404, detail=f"Student not found with ID {student_id_number}")
+
+    results = query.all() #returns all courses associated with the student or all students if no ID is provided
+
+    if not results and student_id_number: #student exists but currently has no courses they're enrolled in
+        raise HTTPException(status_code=404, detail=f"No courses found for student with ID {student_id_number}")
+    elif not results: #no enrollements or student found at all 
+        raise HTTPException(status_code=404, detail="No student enrollments found")
+    
+    return [
+        {
+            "student_name": result.student_name,
+            "student_id_number": result.student_id_number,
+            "course_name": result.course_name,
+            "course_number": result.course_number,
+            "credits": result.credits,
+            "teacher": result.teacher,
+            "grade": result.grade
+
+        }
+
+        for result in results
+    ]
+
+
+
+
+
+
+# @app.put("/update_student_course/{student_id}/{course_id}")
 
 @app.delete("/reset_courses")
 async def reset_courses(db: db_dependency):
