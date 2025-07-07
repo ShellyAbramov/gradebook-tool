@@ -11,7 +11,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import StudentRecordsPage from './pages/StudentRecordsPage';
 import AddStudentCoursePage from './pages/AddStudentCoursePage';
 import CourseCatalogPage from './pages/CourseCatalogPage';
-
+import GradePage from './pages/GradePage';
 
 const App = () => {
   const router = createBrowserRouter(
@@ -23,6 +23,7 @@ const App = () => {
         <Route path='/student-records' element={<StudentRecordsPage />} />
         <Route path='/add-student-course' element={<AddStudentCoursePage />} />
         <Route path='/courses' element={<CourseCatalogPage />} />
+        <Route path='/grades' element={<GradePage />} />
         <Route path='*' element={<NotFoundPage />} />
       </Route>
     )
